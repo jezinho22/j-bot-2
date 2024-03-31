@@ -15,7 +15,14 @@ const client = new Client({
     IntentsBitField.Flags.GuildMessageReactions,
   ],
 });
+
 const token = process.env["TOKEN"];
+const wellbeingBotId = process.env["WELLBEINGBOT"];
+const staffLobbyId = process.env["STAFFLOBBY"];
+const staffDeliveryId = process.env["STAFFDELIVERY"];
+const staffPrivateId = process.env["STAFFPRIVATE"];
+const botsTwoId = process.env["BOTTEST"];
+
 client.login(token);
 
 const jennasGifs = [
@@ -47,28 +54,45 @@ client.on("ready", (c) => {
 });
 
 client.on("messageCreate", (message) => {
-  console.log(message.content);
-
-  const content = message.content;
-
-  if (/\p{Extended_Pictographic}/u.test(content)) {
-    console.log("Found one!");
-    const emoji = String.fromCharCode();
-    console.log (emoji)
-    message.react('\u{1F602}')
-    const index = content.search(/\p{Extended_Pictographic}/u);
-    console.log(index);
-  } else if (
-    content.includes("Jenna") ||
-    content.includes("Buxton") ||
-    content.includes("meme") ||
-    content.includes("gifs")
-  ) {
-    jennaResponse(message);
-  } else {
+  const content = message.content.toLowerCase();
+  
+  // is the message a well-being message that needs emojis?
+  if (
+      (message.author.id == wellbeingBotId) &&  
+        /\p{Extended_Pictographic}/u.test(content)
+     ) {
+    reactEmoji(message)
   }
+
+  // is the message a Jenna one that needs a gif?
+  if ( (message.channelId == staffLobbyId || 
+               message.channelId == staffDeliveryId || 
+               message.channelId == staffPrivateId ||
+               message.channelId == botsTwoId)
+             &&
+              (content.includes("jenna") ||
+              content.includes("buxton") ||
+              content.includes("meme") ||
+              content.includes("gifs") ||
+              content.includes("gossip") ||
+              content.includes("fun lunch") ||
+              content.includes("lunch")) 
+            ) {
+    jennaResponse(message);
+  } 
 });
 
+// post reactions from wellbeing message for students to click
+function reactEmoji(message) {
+  const emojis = getEmojis(message.content);
+  for (let i = 0; i < 3; i++) {
+    const emoji = emojis[i]
+    if (emoji != null)
+    message.react(emoji);
+  }
+}
+
+// extract gifs from wellbeing message
 function getEmojis (string){
   console.log(string)
   let emojiArr = []
@@ -81,11 +105,12 @@ function getEmojis (string){
   return emojiArr
 }
 
+// pick a random gif and post it as a reply
 function jennaResponse(message) {
   message.react("😎");
   const randomGif = jennasGifs[Math.floor(Math.random() * jennasGifs.length)];
   message
-    .reply("Did someone just mention me? \n" + randomGif)
+    .reply("Hiya!! You just used one of my magic words! Here's one of my little treats!\n" + randomGif)
     .then(() => console.log(`Replied to message "${message.content}"`))
     .catch(console.error);
 }
