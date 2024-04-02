@@ -1,10 +1,13 @@
+
+require("dotenv").config();
 const {
   Client,
   IntentsBitField,
   Attachment,
   AttachmentBuilder,
 } = require("discord.js");
-require("dotenv").config();
+
+// this bot is being kept alive by UptimeRobot.com
 
 const client = new Client({
   intents: [
@@ -57,12 +60,7 @@ client.on("messageCreate", (message) => {
   const content = message.content.toLowerCase();
   
   // is the message a well-being message that needs emojis?
-  if (
-      (message.author.id == wellbeingBotId) &&  
-        /\p{Extended_Pictographic}/u.test(content)
-     ) {
-    reactEmoji(message)
-  }
+
 
   // is the message a Jenna one that needs a gif?
   if ( (message.channelId == staffLobbyId || 
@@ -81,29 +79,6 @@ client.on("messageCreate", (message) => {
     jennaResponse(message);
   } 
 });
-
-// post reactions from wellbeing message for students to click
-function reactEmoji(message) {
-  const emojis = getEmojis(message.content);
-  for (let i = 0; i < 3; i++) {
-    const emoji = emojis[i]
-    if (emoji != null)
-    message.react(emoji);
-  }
-}
-
-// extract gifs from wellbeing message
-function getEmojis (string){
-  console.log(string)
-  let emojiArr = []
-  let testStr = string
-  while (/\p{Extended_Pictographic}/u.test(testStr)){
-    const index = testStr.search(/\p{Extended_Pictographic}/u)
-    emojiArr.push(testStr[index]+testStr[index+1])
-    testStr = testStr.slice(index+2)
-  }
-  return emojiArr
-}
 
 // pick a random gif and post it as a reply
 function jennaResponse(message) {
