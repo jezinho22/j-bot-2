@@ -20,7 +20,6 @@ const client = new Client({
 });
 
 const token = process.env["TOKEN"];
-const wellbeingBotId = process.env["WELLBEINGBOT"];
 const staffLobbyId = process.env["STAFFLOBBY"];
 const staffDeliveryId = process.env["STAFFDELIVERY"];
 const staffPrivateId = process.env["STAFFPRIVATE"];
